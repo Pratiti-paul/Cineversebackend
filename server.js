@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: "https://cineversefrontend.vercel.app/", // Vite default port
+  origin: "https://cineversefrontend.vercel.app", // Vite default port
   credentials: true // Enable cookies
 }));
 app.use(express.json());
