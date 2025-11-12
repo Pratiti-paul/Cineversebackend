@@ -119,9 +119,9 @@ export const signup= async (req, res) => {
     const user = await prisma.user.create({
       data: { name, email, password: hashedPassword },
     });
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1d" });
+    // const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1d" });
     console.log("New user signed up:", user);
-    res.json({ token, user });
+    res.status(200).json({message : "Lets go signedup", user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error signing up", error });
@@ -134,11 +134,61 @@ export const login = async (req, res) => {
     if (!user) return res.status(400).json({ message: "User not found" });
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "1d" });
-    res.json({ token, user });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+    
+    // Set HTTP-only cookie for security
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
+    res.json({ 
+      message: "Login successful",
+      token, 
+      user: { id: user.id, name: user.name, email: user.email }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error logging in", error });
+  }
+};
+
+// Add logout function
+export const logout = async (req, res) => {
+  try {
+    res.clearCookie('auth_token');
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Error logging out", error });
+  }
+};
+
+// Add function to verify if user is authenticated
+export const verifyAuth = async (req, res) => {
+  try {
+    const token = req.cookies.auth_token || req.headers.authorization?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await prisma.user.findUnique({ 
+      where: { id: decoded.id },
+      select: { id: true, name: true, email: true }
+    });
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    res.json({ user, token });
+  } catch (error) {
+    console.error(error);
+    res.status(401).json({ message: "Invalid token" });
   }
 };
 
