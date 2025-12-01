@@ -162,4 +162,41 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+
+router.get("/:id/reviews", async (req, res) => {
+  if (!process.env.TMDB_API_KEY) {
+    return res.status(500).json({ error: "TMDB_API_KEY not configured on server." });
+  }
+
+  try {
+    const movieId = req.params.id;
+    const page = req.query.page || 1;
+
+    // simple in-memory cache to reduce TMDb calls (short TTL)
+    const cacheKey = `tmdb:reviews:${movieId}:p${page}`;
+    if (!global.__tmdbCache) global.__tmdbCache = new Map();
+    const cached = global.__tmdbCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return res.json(cached.value);
+    }
+
+    const url = tmdb(`/movie/${encodeURIComponent(movieId)}/reviews`, {
+      language: "en-US",
+      page
+    });
+
+    const json = await safeFetch(url);
+
+    // store short-lived cache (90s)
+    global.__tmdbCache.set(cacheKey, { value: json, expiresAt: Date.now() + 90 * 1000 });
+
+    return res.json(json);
+  } catch (err) {
+    console.error("moviesRoutes /:id/reviews error:", err);
+    const status = err.status && Number.isInteger(err.status) ? err.status : 500;
+    return res.status(status).json({ error: "Failed to fetch reviews", detail: err.message });
+  }
+});
+
+
 export default router;

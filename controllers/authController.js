@@ -16,7 +16,7 @@ export const signup = async (req, res) => {
     const hashed = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.user.create({
-      data: { name, email, password: hashed }
+      data: { name, email, passwordHash: hashed }
     });
 
     res.status(201).json({ message: "Signup successful!" ,newUser : {
@@ -38,7 +38,7 @@ export const login = async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const match = await bcrypt.compare(password, user.password);
+    const match = await bcrypt.compare(password, user.passwordHash);
     if (!match) return res.status(400).json({ message: "Invalid password" });
 
     const token = jwt.sign(
@@ -50,6 +50,6 @@ export const login = async (req, res) => {
     res.json({ message: "Login successful", token });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error" ,error: err.message});
   }
 };
