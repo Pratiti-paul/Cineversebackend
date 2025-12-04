@@ -187,7 +187,6 @@ router.get("/:id/reviews", async (req, res) => {
 
     const json = await safeFetch(url);
 
-    // store short-lived cache (90s)
     global.__tmdbCache.set(cacheKey, { value: json, expiresAt: Date.now() + 90 * 1000 });
 
     return res.json(json);
