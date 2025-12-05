@@ -4,7 +4,6 @@ const router = express.Router();
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
-// Make fetch available: use global fetch if present, otherwise try node-fetch
 let fetcher;
 if (typeof fetch === "function") {
   fetcher = fetch;
