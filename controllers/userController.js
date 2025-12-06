@@ -8,14 +8,31 @@ export const getWatchlist = async (req, res) => {
 };
 
 export const addToWatchlist = async (req, res) => {
-  const userId = req.user.userId;
-  const { tmdbId, title, posterPath } = req.body;
+  try {
+    const userId = req.user.userId;
+    const { tmdbId, title, posterPath } = req.body;
 
-  const item = await prisma.watchlist.create({
-    data: { userId, tmdbId, title, posterPath }
-  });
+    const item = await prisma.watchlist.upsert({
+      where: {
+        ux_user_tmdb: {
+          userId,
+          tmdbId: Number(tmdbId),
+        },
+      },
+      update: {},
+      create: {
+        userId,
+        tmdbId: Number(tmdbId),
+        title,
+        posterPath,
+      },
+    });
 
-  res.status(201).json(item);
+    res.status(200).json(item);
+  } catch (err) {
+    console.error("addToWatchlist error:", err);
+    res.status(500).json({ error: "Failed to add to watchlist" });
+  }
 };
 
 export const removeFromWatchlist = async (req, res) => {

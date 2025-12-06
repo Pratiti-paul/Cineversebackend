@@ -15,6 +15,7 @@ model User {
   createdAt    DateTime   @default(now())
 
   watchlists   Watchlist[]
+  reviews      Review[]
 }
 
 model Watchlist {
@@ -29,4 +30,17 @@ model Watchlist {
   @@unique([userId, tmdbId], name: "ux_user_tmdb")
   @@index([userId], name: "idx_user_id")
   @@map("watchlists")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  tmdbId    Int
+  content   String   @db.Text
+  rating    Int?     // 1-10 scale
+  createdAt DateTime @default(now())
+
+  @@index([tmdbId], name: "idx_review_tmdb")
+  @@map("reviews")
 }
