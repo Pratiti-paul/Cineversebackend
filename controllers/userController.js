@@ -9,10 +9,10 @@ export const getWatchlist = async (req, res) => {
 
 export const addToWatchlist = async (req, res) => {
   const userId = req.user.userId;
-  const { tmdbId, title, poster } = req.body;
+  const { tmdbId, title, posterPath } = req.body;
 
   const item = await prisma.watchlist.create({
-    data: { userId, tmdbId, title, poster }
+    data: { userId, tmdbId, title, posterPath }
   });
 
   res.status(201).json(item);

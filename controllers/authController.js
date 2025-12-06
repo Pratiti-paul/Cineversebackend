@@ -18,7 +18,6 @@ export const signup = async (req, res) => {
     const newUser = await prisma.user.create({
       data: { name, email, passwordHash: hashed }
     });
-
     res.status(201).json({ message: "Signup successful!" ,newUser : {
       id: newUser.id,
       name: newUser.name,
@@ -46,10 +45,31 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
+    res.cookie("token", token, { httpOnly: false, secure: process.env.NODE_ENV === "production" });  
 
     res.json({ message: "Login successful", token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" ,error: err.message});
+  }
+};
+export const logout = async (req, res) => {
+  // For JWT, logout is typically handled on the client side by deleting the token.
+  // Optionally, you can implement token blacklisting on the server side.
+  res.json({ message: "Logout successful" });
+};
+export const verify = async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ valid: true, user: decoded });
+  } catch (err) {
+    console.error("Token verification error:", err);
+    res.status(401).json({ valid: false, message: "Invalid token" });
   }
 };
