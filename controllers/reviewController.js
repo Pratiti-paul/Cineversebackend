@@ -50,3 +50,23 @@ export const getReviews = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch reviews." });
   }
 };
+
+export const deleteReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
+
+    const review = await prisma.review.findUnique({ where: { id: Number(id) } });
+    if (!review) return res.status(404).json({ error: "Review not found" });
+
+    if (review.userId !== userId) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await prisma.review.delete({ where: { id: Number(id) } });
+    res.json({ message: "Review deleted successfully" });
+  } catch (err) {
+    console.error("deleteReview error:", err);
+    res.status(500).json({ error: "Failed to delete review" });
+  }
+};
