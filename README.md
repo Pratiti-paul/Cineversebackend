@@ -8,11 +8,29 @@ The backend API for CineVerse, built with Node.js, Express, and PostgreSQL (via 
 - **Framework**: Express.js
 - **Database**: PostgreSQL (Neon DB)
 - **ORM**: Prisma
-- **Authentication**: JWT (JSON Web Tokens) & bcryptjs
+## 📁 Project Structure
 
----
-
-## 🏗️ Installation & Setup
+```
+backend/
+├── controllers/
+│   ├── authController.js     # Signup, Login, Verification logic
+│   ├── reviewController.js   # Review CRUD operations
+│   └── userController.js     # Profile & Watchlist management
+│
+├── middlewares/
+│   └── authMiddleware.js     # JWT verification middleware
+│
+├── prisma/
+│   └── schema.prisma         # Database schema definition
+│
+├── routes/
+│   ├── authRoutes.js         # Authentication endpoints
+│   ├── moviesRoutes.js       # TMDB proxy endpoints
+│   ├── reviewRoutes.js       # Review-related routes
+│   └── userRoutes.js         # User-specific routes
+│
+└── server.js                 # Express server entry point
+```
 
 ### Prerequisites
 - Node.js (v16+)
