@@ -40,17 +40,14 @@ async function safeFetch(url) {
   return resp.json();
 }
 
-/**
- * Genre mapping - friendly keys to TMDb genre ids.
- * Add or edit as needed.
- */
+
 const GENRE_MAP = {
   thriller: "53",
   drama: "18",
-  family: "10751",           // Kids choice
+  family: "10751",          
   action: "28",
   adventure: "12",
-  action_adventure: "28,12", // combined
+  action_adventure: "28,12", 
   comedy: "35",
   horror: "27",
   romance: "10749",
@@ -58,7 +55,6 @@ const GENRE_MAP = {
   mystery: "9648"
 };
 
-// TRENDING
 router.get("/trending", async (req, res) => {
   if (!process.env.TMDB_API_KEY) {
     return res.status(500).json({ error: "TMDB_API_KEY not configured on server." });
@@ -74,16 +70,13 @@ router.get("/trending", async (req, res) => {
   }
 });
 
-// LATEST RELEASES -> we will use discover sorted by release_date desc and region optional
 router.get("/latest", async (req, res) => {
   if (!process.env.TMDB_API_KEY) {
     return res.status(500).json({ error: "TMDB_API_KEY not configured." });
   }
-  // optional query params: region, page
-  const region = req.query.region || ""; // e.g. "US"
+  const region = req.query.region || ""; 
   const page = req.query.page || 1;
   try {
-    // Discover by release date descending to show newest releases
     const url = tmdb("/discover/movie", {
       sort_by: "release_date.desc",
       include_adult: "false",
@@ -99,7 +92,6 @@ router.get("/latest", async (req, res) => {
   }
 });
 
-// GENRE-based lists: /api/movies/genre/:name
 router.get("/genre/:name", async (req, res) => {
   if (!process.env.TMDB_API_KEY) {
     return res.status(500).json({ error: "TMDB_API_KEY not configured." });
@@ -107,7 +99,6 @@ router.get("/genre/:name", async (req, res) => {
   const name = (req.params.name || "").toLowerCase();
   const page = req.query.page || 1;
 
-  // Accept combined "action_adventure" or single genre keys
   const genreId = GENRE_MAP[name];
   if (!genreId) {
     return res.status(400).json({ error: `Unknown genre '${name}'. Supported: ${Object.keys(GENRE_MAP).join(", ")}` });
@@ -129,7 +120,6 @@ router.get("/genre/:name", async (req, res) => {
   }
 });
 
-// Search & details (kept from prior)
 router.get("/search", async (req, res) => {
   if (!process.env.TMDB_API_KEY) {
     return res.status(500).json({ error: "TMDB_API_KEY not configured." });
@@ -171,7 +161,6 @@ router.get("/:id/reviews", async (req, res) => {
     const movieId = req.params.id;
     const page = req.query.page || 1;
 
-    // simple in-memory cache to reduce TMDb calls (short TTL)
     const cacheKey = `tmdb:reviews:${movieId}:p${page}`;
     if (!global.__tmdbCache) global.__tmdbCache = new Map();
     const cached = global.__tmdbCache.get(cacheKey);

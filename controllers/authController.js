@@ -18,6 +18,7 @@ export const signup = async (req, res) => {
     const newUser = await prisma.user.create({
       data: { name, email, passwordHash: hashed }
     });
+
     res.status(201).json({ message: "Signup successful!" ,newUser : {
       id: newUser.id,
       name: newUser.name,
@@ -47,15 +48,21 @@ export const login = async (req, res) => {
     );
     res.cookie("token", token, { httpOnly: false, secure: process.env.NODE_ENV === "production" });  
 
-    res.json({ message: "Login successful", token });
+    res.json({ 
+      message: "Login successful", 
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" ,error: err.message});
   }
 };
 export const logout = async (req, res) => {
-  // For JWT, logout is typically handled on the client side by deleting the token.
-  // Optionally, you can implement token blacklisting on the server side.
   res.json({ message: "Logout successful" });
 };
 export const verify = async (req, res) => {

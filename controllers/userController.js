@@ -54,7 +54,6 @@ export const getProfile = async (req, res) => {
         name: true,
         email: true,
         createdAt: true,
-        // add any public profile fields here
       }
     });
 
@@ -70,13 +69,9 @@ export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
     const { name, email } = req.body;
-
-    // Optionally validate email uniqueness if changing email
     if (!name || !email) {
       return res.status(400).json({ error: "Name and email are required" });
     }
-
-    // If email has changed, ensure it's not taken
     const existing = await prisma.user.findFirst({
       where: {
         email,
