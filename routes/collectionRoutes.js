@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.use(verifyToken); // All routes require auth
+router.use(verifyToken); 
 
 router.post("/", createCollection);
 router.get("/", getMyCollections);
