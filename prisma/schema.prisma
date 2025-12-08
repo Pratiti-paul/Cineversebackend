@@ -16,6 +16,7 @@ model User {
 
   watchlists   Watchlist[]
   reviews      Review[]
+  collections  Collection[]
 }
 
 model Watchlist {
@@ -43,4 +44,33 @@ model Review {
 
   @@index([tmdbId], name: "idx_review_tmdb")
   @@map("reviews")
+}
+
+model Collection {
+  id          Int              @id @default(autoincrement())
+  user        User             @relation(fields: [userId], references: [id])
+  userId      Int
+  title       String           @db.VarChar(255)
+  description String?          @db.Text
+  isPublic    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  items       CollectionItem[]
+
+  @@index([userId])
+  @@map("collections")
+}
+
+model CollectionItem {
+  id           Int        @id @default(autoincrement())
+  collection   Collection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  collectionId Int
+  tmdbId       Int
+  title        String?    @db.VarChar(512)
+  posterPath   String?    @db.VarChar(512)
+  releaseDate  String?    @db.VarChar(50)
+  addedAt      DateTime   @default(now())
+
+  @@unique([collectionId, tmdbId])
+  @@map("collection_items")
 }
