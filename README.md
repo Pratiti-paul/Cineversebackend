@@ -1,14 +1,15 @@
-# 🎬 CineVerse Backend
+# CineVerse Backend
 
 The backend API for CineVerse, built with Node.js, Express, and PostgreSQL (via Prisma). It handles user authentication, movie data integration, reviews, and watchlists.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **Database**: PostgreSQL (Neon DB)
 - **ORM**: Prisma
-## 📁 Project Structure
+  
+## Project Structure
 
 ```
 backend/
@@ -31,47 +32,9 @@ backend/
 │
 └── server.js                 # Express server entry point
 ```
-
-### Prerequisites
-- Node.js (v16+)
-- PostgreSQL Database URL
-
-### 1️⃣ Setup Workspace
-Navigate to the backend directory:
-```bash
-cd backend
-```
-
-### 2️⃣ Install Dependencies
-```bash
-npm install
-```
-
-### 3️⃣ Configure Environment
-Create a `.env` file in the `backend` directory:
-```env
-PORT=8080
-DATABASE_URL="postgresql://username:password@host:5432/database"
-JWT_SECRET="your_super_secret_jwt_key"
-TMDB_API_KEY="your_tmdb_api_key"
-NODE_ENV="development"
-```
-
-### 4️⃣ Database Migration
-Run Prisma migrations to set up your database schema:
-```bash
-npx prisma migrate dev --name init
-```
-
-### 5️⃣ Start Server
-```bash
-npm run dev
-```
-The server will start at `http://localhost:8080`.
-
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Auth
 | Method | Endpoint | Description |
@@ -82,6 +45,7 @@ The server will start at `http://localhost:8080`.
 | `POST` | `/api/auth/logout` | Logout user |
 
 ### Movies (Public)
+
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/api/movies/trending` | Get trending movies |
@@ -92,6 +56,7 @@ The server will start at `http://localhost:8080`.
 | `GET` | `/api/reviews/:id` | Get reviews for a movie |
 
 ### User Actions (Protected)
+
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
 | `GET` | `/api/user/watchlist` | Get user's watchlist |
@@ -103,7 +68,7 @@ The server will start at `http://localhost:8080`.
 
 ---
 
-## 🗄️ Database Schema
+## Database Schema
 
 ### User
 - Handles authentication and profile data.
@@ -118,7 +83,7 @@ The server will start at `http://localhost:8080`.
 
 ---
 
-## 🛡️ Security
+## Security
 - **Passwords**: Hashed using `bcryptjs`.
 - **Tokens**: JWT signed tokens for session management.
 - **Middleware**: Protected routes verify valid JWT signatures.
@@ -126,9 +91,5 @@ The server will start at `http://localhost:8080`.
 
 ---
 
-## 📜 License
-MIT License.
-
-## 👨‍💻 Author
-**Pratiti Paul**  
-- [GitHub](https://github.com/Pratiti-paul)
+## Made with ❤️ by Pratiti Paul 
+[GitHub](https://github.com/Pratiti-paul)
